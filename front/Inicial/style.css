@@ -1,13 +1,15 @@
-* { 
-        margin: 0; 
-        padding: 0;
-        box-sizing: border-box;
-  }
-    #root {
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#root {
     width: 100%;
     height: 100vh;
-    }
-    #corpo {
+}
+
+#corpo {
     width: 100%;
     height: 73%;
     align-items: center;
@@ -15,87 +17,100 @@
     flex-direction: row;
     justify-content: center;
     gap: 50px;
-    }
+}
 
-    header {
-        background-color: #cc0000;
-        height: 95px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 20px;
-    }
+header {
+    background-color: #cc0000;
+    height: 95px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
 
-    #Sesi {
-        height: 45px;
-        width: auto;
-    }   
+#Sesi {
+    height: 45px;
+    width: auto;
+}
 
-    .usuario {
-     color: white;
-     height: 40px;
-     width: 40px;
-    }
+.usuario {
+    color: white;
+    height: 40px;
+    width: 40px;
+}
 
-    .menu {
-        background-color: #ae0909;
-        height: 50px;
+.menu {
+    background-color: #ae0909;
+    height: 50px;
 
-    }
-    .fundoI{
-        height: 250px;
-        width: 250px;
-        filter: invert(100%); 
-    }
+}
 
-    .caixa1 {
-        background-color: #ae0909;
-        height: 300px;
-        width: 22rem;
-        display: flex;  
-        flex-direction: column;
-        align-items: center;
-        margin: 50px;
-        border-radius: 20px;
-        padding: 10px;
-    }
+.fundoI {
+    height: 250px;
+    width: 250px;
+    filter: invert(100%);
+}
 
-    .mensagem{
-        background-color: #850808;
-        height: 48px;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        display: flex;
-        color : white;
-        margin-top: 15px;
-        width: 70%;
-        font-size: 10px;
-        
-    }
+.caixa1 {
+    background-color: #ae0909;
+    height: 300px;
+    width: 22rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 50px;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.mensagem {
+    background-color: #850808;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    display: flex;
+    color: white;
+    margin-top: 15px;
+    font-size: 10px;
+
+}
+
+.area_cozinha {
+    background-color: #ae0909;
+    height: 300px;
+    width: 22rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 50px;
+    border-radius: 20px;
+    padding: 10px;
+}
 
 
-    #notficacao{
-        background-color: #850808;
-        height: 48px;
-        align-items: center;
-        justify-content: center;
-        display: flex;
-        color : white;
-        width: 70%;
-        margin-top: 10px;
-    }
+#notficacao {
+    background-color: #850808;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    color: white;
+    width: 70%;
+    margin-top: 10px;
+}
 
-    footer{
-      background-color: #ae0909;
-      height: 51px;
-    }
+footer {
+    background-color: #ae0909;
+    height: 51px;
+}
 
- button{
+button {
     border: none;
     background-color: rgba(255, 255, 255, 0);
- }
- a{
-    text-decoration:none ;
+}
 
- }
+a {
+    text-decoration: none;
+
+}

@@ -1,6 +1,7 @@
-import express from "express";  // Importa o framework Express para criar o servidor web
-import cors from "cors"; // Importa o middleware CORS para permitir requisições de diferentes origens
-import sql from "./database.js"; // Importa a configuração do banco de dados
+import express from "express"; 
+import cors from "cors"; 
+import sql from "./database.js"; 
+import {CriarHash} from "./utils.js"
 
 // nesse codigo estamos importando as bibliotecas necessarias para criar um servidor web com express, permitir requisições de diferentes origens com cors e conectar ao banco de dados com sql.
 
@@ -11,19 +12,22 @@ app.use(cors()); // configura a aplicação para usar o middleware CORS
 //nesse trecho estamos criando a aplicação express e configurando ela para entender requisições com corpo em JSON e permitir requisições de diferentes origens.
 
 // Rota para cadastro de novo usuario.
-app.post("/cadastro/novo", async (req, res) => { // define uma rota POST para a URL "/cadastro/novo"
-  const { senha, nome, email, cargo } = req.body; // pega os dados do corpo da requisição (senha, nome, email, cargo)
+app.post("/cadastro/novo", async (req, res) => { 
+  const { senha, nome, email, cargo } = req.body; 
+
+  const hash = await CriarHash(senha, 10)
+
   console.log("cadastrado"); //mostra no console a mensagem "cadastrado"
   const cadastro = // cria uma constante 'cadastro' que armazena o resultado da consulta SQL
-    await sql`INSERT INTO usuario(email, nome, cargo, senha ) values(${email}, ${nome}, ${cargo}, ${senha} )`; // armazena no banco de dados os dados do novo usuário
+    await sql`INSERT INTO usuario(email, nome, cargo, senha ) values(${email}, ${nome}, ${cargo}, ${hash} )`; // armazena no banco de dados os dados do novo usuário
   return res.status(200).json(cadastro[0]); //retorna uma resposta de sucesso com os dados do usuário em formato JSON
 });
 
 
 // Rota validação de Login.
-app.post("/login/", async (req, res) => { // define uma rota POST para a URL "/login/"
-  const { email, senha } = req.body; // pega os dados do corpo da requisição (email e senha)
-  const entrar = await sql`select * from usuario where email = ${email}`; // cria uma constante 'entrar' que armazena o resultado da consulta SQL para verificar se o email existe no banco de dados
+app.post("/login/", async (req, res) => { 
+  const { email, senha } = req.body; 
+  const entrar = await sql`select * from usuario where email = ${email}`;
   if (entrar[0]) { 
     const verificar = 
       await sql`select * from usuario where email =${email} and senha= ${senha}`;
@@ -31,7 +35,8 @@ app.post("/login/", async (req, res) => { // define uma rota POST para a URL "/l
       return res.status(200).json(verificar[0]); 
     }
     return res.status(401).json({ message: "Usuário ou senha incorreto" });
-  } else {
+  }
+   else {
     return res.status(404).json("Usuário não encontrado");
   }
 });
