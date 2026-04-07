@@ -1,7 +1,7 @@
-import express from "express"; 
-import cors from "cors"; 
-import sql from "./database.js"; 
-import {CriarHash} from "./utils.js"
+import express from "express";
+import cors from "cors";
+import sql from "./database.js";
+import { CriarHash, CompararHash } from "./utils.js"
 
 // nesse codigo estamos importando as bibliotecas necessarias para criar um servidor web com express, permitir requisições de diferentes origens com cors e conectar ao banco de dados com sql.
 
@@ -12,8 +12,8 @@ app.use(cors()); // configura a aplicação para usar o middleware CORS
 //nesse trecho estamos criando a aplicação express e configurando ela para entender requisições com corpo em JSON e permitir requisições de diferentes origens.
 
 // Rota para cadastro de novo usuario.
-app.post("/cadastro/novo", async (req, res) => { 
-  const { senha, nome, email, cargo } = req.body; 
+app.post("/cadastro/novo", async (req, res) => {
+  const { senha, nome, email, cargo } = req.body;
 
   const hash = await CriarHash(senha, 10)
 
@@ -25,73 +25,72 @@ app.post("/cadastro/novo", async (req, res) => {
 
 
 // Rota validação de Login.
-app.post("/login/", async (req, res) => { 
-  const { email, senha } = req.body; 
+app.post("/login/", async (req, res) => {
+  const { email, senha } = req.body;
   const entrar = await sql`select * from usuario where email = ${email}`;
-  if (entrar[0]) { 
-    const verificar = 
-      await sql`select * from usuario where email =${email} and senha= ${senha}`;
-    if (verificar[0]) {
-      return res.status(200).json(verificar[0]); 
+  if (entrar[0]) {
+    const teste = await CompararHash(senha,entrar[0].senha)
+    if (teste) {
+      return res.status(200).json(entrar[0]);
     }
     return res.status(401).json({ message: "Usuário ou senha incorreto" });
   }
-   else {
+  else {
     return res.status(404).json("Usuário não encontrado");
   }
 });
 
-app.put("/mudarSenha", async (req, res) => {  
+app.put("/mudarSenha", async (req, res) => {
   const { senha, senha_N, id_usuario } = req.body;
 
   const trocar = await sql`SELECT senha FROM usuario where id_usuario = ${id_usuario} and senha = ${senha}`;
 
   if (trocar.length != 0) {
     await sql`UPDATE usuario SET senha = ${senha_N} WHERE id_usuario = ${id_usuario};`
-    return res.status(201).json({message : "teste"});
+    return res.status(201).json({ message: "teste" });
   }
   return res.status(401).json({ message: "bla" });
 })
 
 app.post("/checklist", async (req, res) => {
-  const { funcao, data, localizacao, urgencia, id_usuario, prazo, responsavel} = req.body 
+  const { funcao, data, localizacao, urgencia, id_usuario, prazo, responsavel } = req.body
 
-  const criar = await sql `INSERT INTO requisicao(nivel_urgencia, funcao, data_requisicao, localizacao, id_usuario, prazo, destinatario_req) VALUES(${urgencia}, ${funcao}, ${data}, ${localizacao}, ${id_usuario}, ${prazo}, ${responsavel})`;
+  const criar = await sql`INSERT INTO requisicao(nivel_urgencia, funcao, data_requisicao, localizacao, id_usuario, prazo, destinatario_req) VALUES(${urgencia}, ${funcao}, ${data}, ${localizacao}, ${id_usuario}, ${prazo}, ${responsavel})`;
   return res.status(200).json(criar[0])
 })
 
 app.get("/MostrarTarefa/:cargo", async (req, res) => {
-  const {cargo} = req.params
-  const mostrar = await sql `SELECT * FROM requisicao 
+  const { cargo } = req.params
+  const mostrar = await sql`SELECT * FROM requisicao 
 where requisicao.localizacao = ${cargo}`
- return res.status(200).json(mostrar)
+  return res.status(200).json(mostrar)
 })
 
-app.get("/ListarUsers", async (req, res) => { 
-  const listar = await sql `SELECT id_usuario, nome FROM usuario;`
+app.get("/ListarUsers", async (req, res) => {
+  const listar = await sql`SELECT id_usuario, nome FROM usuario;`
   return res.status(200).json(listar)
 })
 
-app.delete("/Apagar_Req/:id", async(req, res)=>{
-  const {id}= req.params
-  const apagar = await sql `DELETE FROM requisicao
+app.delete("/Apagar_Req/:id", async (req, res) => {
+  const { id } = req.params
+  const apagar = await sql`DELETE FROM requisicao
 WHERE id_requisicao = ${id};
 `
-return res.status(200).json(apagar)
+  return res.status(200).json(apagar)
 })
 
 app.put("/Editar_Req/:id", async (req, res) => {
-  const {id} = req.params
-  const {funcao, data, localizacao, urgencia, prazo, responsavel } = req.body
-  const editar = await sql `UPDATE requisicao
+  const { id } = req.params
+  const { funcao, data, localizacao, urgencia, prazo, responsavel } = req.body
+  const editar = await sql`UPDATE requisicao
 	SET nivel_urgencia=${urgencia}, funcao=${funcao}, data_requisicao=${data}, localizacao=${localizacao}, prazo=${prazo}, destinatario_req=${responsavel}
 	WHERE id_requisicao = ${id}`
   return res.status(200).json(editar)
 })
 
 app.get("/Historico/:id", async (req, res) => {
-  const {id} = req.params
-  const buscar = await sql `SELECT * from requisicao where id_usuario = ${id}
+  const { id } = req.params
+  const buscar = await sql`SELECT * from requisicao where id_usuario = ${id}
 `
   return res.status(200).json(buscar)
 })
