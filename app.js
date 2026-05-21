@@ -84,8 +84,9 @@ app.post("/login/", async (req, res) => {
   }
 });
 
-app.put("/mudarSenha", async (req, res) => {
-  const { senha, senha_N, id_usuario } = req.body;
+app.put("/mudarSenha/:id_usuario", async (req, res) => {
+  const {id_usuario} = req.params;
+  const { senha, senha_N } = req.body;
   const trocar =
     await sql`SELECT senha FROM usuario where id_usuario = ${id_usuario}`;
   const compar = CompararHash(senha, trocar[0].senha);
@@ -206,5 +207,3 @@ app.get("/imagem/:id_usuario", async (req, res) => {
 app.listen(3000, () => {
   console.log("Cu");
 });
-
-
