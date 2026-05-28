@@ -3,29 +3,31 @@ import cors from "cors";
 import sql from "./database.js";
 import { CriarHash, CompararHash } from "./utils.js";
 
-// nesse codigo estamos importando as bibliotecas necessarias para criar um servidor web com express, permitir requisições de diferentes origens com cors e conectar ao banco de dados com sql.
 
-const app = express(); // cria uma constante 'app' que representa a aplicação Express
 app.use(express.json({ limit: '50mb' })); // Aumenta limite para 50MB
 app.use(express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 app.use(cors());
 
-//nesse trecho estamos criando a aplicação express e configurando ela para entender requisições com corpo em JSON e permitir requisições de diferentes origens.
+
 
 app.post("/cadastro/novo", async (req, res) => {
-  const { senha, nome, email, cargo } = req.body;
+  const { senha, nome, email, cargo, codigo } = req.body;
 
-  const regexSenha =/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])^[\x21-\x7e]{8,255}$/;
+  const regexSenha = /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_])^[\x21-\x7e]{8,255}$/;
   const regexNome = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
   const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   try {
-    console.log(senha, nome, email, cargo)
-    
-    if (!senha || !nome || !email || !cargo) {
+    if (codigo != "Leda") {
+      return res.status(400).json("Codigo de Verificação invalido ");
+    }
+
+    if (!senha || !nome || !email || !cargo || !codigo) {
+
       return res.status(400).json("Preencha todos os campos!");
     }
     if (!regexSenha.test(senha)) {
+
       return res.status(400).json("Preencha todos os campos!");
     }
     if (!regexNome.test(nome)) {
@@ -34,9 +36,8 @@ app.post("/cadastro/novo", async (req, res) => {
     if (!regexEmail.test(email)) {
       return res.status(400).json("Preencha todos os campos!");
     }
-
     const usuarioExistente = await sql`SELECT id_usuario FROM usuario WHERE email = ${email}`;
-    
+
     if (usuarioExistente.length > 0) {
       return res.status(404).json("Este e-mail já está cadastrado!");
     }
@@ -52,7 +53,7 @@ app.post("/cadastro/novo", async (req, res) => {
   }
 });
 
-// Rota validação de Login.
+
 app.post("/login/", async (req, res) => {
   const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const regexSenha =
@@ -85,7 +86,7 @@ app.post("/login/", async (req, res) => {
 });
 
 app.put("/mudarSenha/:id_usuario", async (req, res) => {
-  const {id_usuario} = req.params;
+  const { id_usuario } = req.params;
   const { senha, senha_N } = req.body;
   const trocar =
     await sql`SELECT senha FROM usuario where id_usuario = ${id_usuario}`;
@@ -154,50 +155,50 @@ app.get("/Historico/:id", async (req, res) => {
 app.put("/imagem", async (req, res) => {
   try {
     const { image, id_usuario } = req.body; // Recebe a imagem base64 e o id do usuário
-    
+
     if (!image) {
       return res.status(400).json({ message: "Nenhuma imagem enviada" });
     }
-    
+
     if (!id_usuario) {
       return res.status(400).json({ message: "ID do usuário não informado" });
     }
-    
+
     // Atualiza a imagem do usuário na tabela usuario
     const resultado = await sql`
       UPDATE usuario 
       SET imagens = ${image} 
       WHERE id_usuario = ${id_usuario} returning *
     `;
-    
+
     if (resultado.length === 0) {
       return res.status(404).json({ message: "Usuário não encontrado" });
     }
-    
+
     return res.status(201).json({ message: "Imagem cadastrada com sucesso!" });
-    
+
   } catch (error) {
     console.error("Erro ao cadastrar imagem:", error);
     return res.status(500).json({ message: "Erro interno do servidor" });
   }
 });
 
-//pra buscar de um especifico
+//Esse é pra buscar o perfil
 app.get("/imagem/:id_usuario", async (req, res) => {
   try {
     const { id_usuario } = req.params;
-    
+
     const resultado = await sql`
       SELECT imagens FROM usuario 
       WHERE id_usuario = ${id_usuario}
     `;
-    
+
     if (resultado.length === 0 || !resultado[0].imagens) {
       return res.status(404).json({ message: "Imagem não encontrada" });
     }
-    
+
     return res.status(200).json({ imagem: resultado[0].imagens });
-    
+
   } catch (error) {
     console.error("Erro ao buscar imagem:", error);
     return res.status(500).json({ message: "Erro interno do servidor" });
