@@ -3,6 +3,7 @@ import cors from "cors";
 import sql from "./database.js";
 import { CriarHash, CompararHash } from "./utils.js";
 
+const app = express();
 
 app.use(express.json({ limit: '50mb' })); // Aumenta limite para 50MB
 app.use(express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 }));
